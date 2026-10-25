@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  Admin
+  Customer
+} 
+
+enum ProductStatus {
+  Active
+  Out_of_Stock
+  Hidden
+}
+
+enum CouponType {
+  Fixed
+  Percent
+}
+
+enum OrderStatus {
+  Pending
+  Processing
+  Shipped
+  Delivered
+  Cancelled
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(Customer)
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  products  Product[]
+}
+
+model Product {
+  id          Int           @id @default(autoincrement())
+  categoryId  Int
+  name        String
+  price       Int
+  stock       Int           @default(0)
+  description String?
+  Image       String?
+  status      ProductStatus @default(Active)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  category   Category    @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  orderItems OrderItem[]
+}
+
+model Coupon {
+  id             Int        @id @default(autoincrement())
+  code           String     @unique
+  discountType   CouponType @default(Fixed)
+  discountValue  Int
+  minOrderAmount Int
+  expiresAt      DateTime
+  usageLimit     Int
+  remainingUses  Int
+  createdAt      DateTime   @default(now())
+
+  order Order[]
+}
+
+model Order {
+  id                 Int         @id @default(autoincrement())
+  customerName       String
+  customerPhone      String
+  shippingAddress    String
+  couponId           Int?
+  couponCodeSnapshot String?
+  discountAmount     Int         @default(0)
+  subTotal           Int
+  finalAmount        Int
+  status             OrderStatus @default(Pending)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  coupon     Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  orderItems OrderItem[]
+}
+
+model OrderItem {
+  id                  Int    @id @default(autoincrement())
+  orderId             Int
+  productId           Int
+  productNameSnapshot String
+  unitPrice           Int
+  quantity            Int
+  subTotal            Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
