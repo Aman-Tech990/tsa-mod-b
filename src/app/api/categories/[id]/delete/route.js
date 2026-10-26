@@ -28,7 +28,7 @@ export async function DELETE(_req, { params }) {
 
         return NextResponse.json({
             success: true,
-            message: "Updated category!",
+            message: "Deleted category!",
             deletedCategory: deletedCategory
         }, { status: 200 });
 

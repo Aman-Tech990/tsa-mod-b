@@ -22,7 +22,11 @@ export async function GET() {
             }, { status: 403 });
         }
 
-        const categories = await prisma.category.findMany();
+        const categories = await prisma.category.findMany({
+            orderBy: {
+                id: "asc"
+            }
+        });
 
         if (!categories || categories.length === 0) {
             return NextResponse.json({
