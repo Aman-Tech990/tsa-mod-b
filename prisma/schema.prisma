@@ -10,7 +10,7 @@ datasource db {
 enum Role {
   Admin
   Customer
-} 
+}
 
 enum ProductStatus {
   Active
@@ -18,7 +18,7 @@ enum ProductStatus {
   Hidden
 }
 
-enum CouponType {
+enum DiscountType {
   Fixed
   Percent
 }
@@ -64,15 +64,15 @@ model Product {
 }
 
 model Coupon {
-  id             Int        @id @default(autoincrement())
-  code           String     @unique
-  discountType   CouponType @default(Fixed)
+  id             Int          @id @default(autoincrement())
+  code           String       @unique
+  discountType   DiscountType @default(Fixed)
   discountValue  Int
   minOrderAmount Int
   expiresAt      DateTime
   usageLimit     Int
   remainingUses  Int
-  createdAt      DateTime   @default(now())
+  createdAt      DateTime     @default(now())
 
   order Order[]
 }
