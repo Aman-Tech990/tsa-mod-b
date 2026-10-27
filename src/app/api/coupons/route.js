@@ -35,7 +35,7 @@ export async function POST(req) {
     try {
         const { code, discountType, discountValue, minOrderAmt, expiresAt, usageLimit } = await req.json();
 
-        if (code === undefined || discountType === undefined || discountValue === undefined || minOrderAmt === undefined || expiresAt === undefined || usageLimit === undefined) {
+        if (!code || !discountType || !discountValue || !minOrderAmt || !expiresAt || !usageLimit || code === undefined || discountType === undefined || discountValue === undefined || minOrderAmt === undefined || expiresAt === undefined || usageLimit === undefined) {
             return NextResponse.json({
                 success: false,
                 message: "Mandatory fields cannot be blank!"
@@ -160,6 +160,7 @@ export async function POST(req) {
         }, { status: 201 });
 
     } catch (error) {
+        console.log(error.message);
         return NextResponse.json({
             success: false,
             message: "Internal server error!"
