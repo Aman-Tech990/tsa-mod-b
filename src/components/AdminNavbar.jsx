@@ -76,6 +76,12 @@ const AdminNavbar = () => {
                         <Link href="/admin/categories" className='hover:text-blue-500 hover:scale-110 transition ease-in'>
                             <li>Categories</li>
                         </Link>
+                        <Link href="/admin/coupons" className='hover:text-blue-500 hover:scale-110 transition ease-in'>
+                            <li>Coupons</li>
+                        </Link>
+                        <Link href="/admin/orders" className='hover:text-blue-500 hover:scale-110 transition ease-in'>
+                            <li>Orders</li>
+                        </Link>
 
                     </ul>
 
@@ -140,7 +146,12 @@ const AdminNavbar = () => {
                             <Link href="/admin/categories" className='hover:text-blue-500 hover:scale-110 transition ease-in'>
                                 <li>Categories</li>
                             </Link>
-
+                            <Link href="/admin/coupons" className='hover:text-blue-500 hover:scale-110 transition ease-in'>
+                                <li>Coupons</li>
+                            </Link>
+                            <Link href="/admin/orders" className='hover:text-blue-500 hover:scale-110 transition ease-in'>
+                                <li>Orders</li>
+                            </Link>
                         </ul>
 
                         <button

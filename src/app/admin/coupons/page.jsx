@@ -241,7 +241,7 @@ const Coupon = () => {
             {/* All Coupons */}
             <div className='mt-4 w-full overflow-x-auto'>
 
-                <table className='w-full min-w-175'>
+                <table className='w-full min-w-200 sm:border-separate'>
                     <thead>
                         <tr className='bg-blue-600 text-white'>
                             <th>Code</th>
@@ -274,6 +274,7 @@ const Coupon = () => {
                                         <td className='pt-3'>
                                             <button
                                                 type='button'
+                                                disabled={isDeleting}
                                                 onClick={() => handleDelete(coupon.id)}
                                                 className='px-4 py-2 bg-red-600 rounded-2xl text-white cursor-pointer hover:bg-red-900 transition duration-200 ease-in-out'
                                             >
