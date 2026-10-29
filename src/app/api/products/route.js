@@ -1,3 +1,4 @@
+import { cloudinary } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import { isAllowed } from "@/middlewares/isAllowed";
 import { isAuth } from "@/middlewares/isAuth";
@@ -29,6 +30,8 @@ export async function GET() {
 }
 
 export async function POST(req) {
+    let uploadedPublicId;
+
     try {
 
         const user = await isAuth();
@@ -57,7 +60,7 @@ export async function POST(req) {
         const description = formData.get("description");
         const status = formData.get("status");
         const image = formData.get("image");
-        
+
         if (!name?.trim() || category === null || price === null || stock === null || !status) {
             return NextResponse.json({
                 success: false,
@@ -88,6 +91,44 @@ export async function POST(req) {
             obj.description = description;
         }
 
+        if (image && !(image instanceof File)) {
+            return NextResponse.json({
+                success: false,
+                message: "Invalid image file."
+            }, { status: 400 });
+        }
+
+        if (image instanceof File && image.size > 0) {
+            const MAX_SIZE = 5 * 1024 * 1024;
+
+            if (image.size > MAX_SIZE) {
+                return NextResponse.json({
+                    success: false,
+                    message: "Image must be 5 MB or smaller."
+                }, { status: 400 });
+            }
+        }
+
+        if (image.type !== "image/png" && image.type !== "image/jpeg") {
+            return NextResponse.json({
+                success: false,
+                message: "Only JPG and PNG images are allowed!"
+            }, { status: 400 });
+        }
+
+        const buffer = Buffer.from(await image.arrayBuffer());
+        const base64 = buffer.toString("base64");
+        const dataUri = `data:${image.type};base64,${base64}`
+
+        const uploadedImage = await cloudinary.uploader.upload(dataUri, {
+            folder: "ohoshop/products",
+            resource_type: "image"
+        });
+
+        uploadedPublicId = uploadedImage.public_id;
+
+        obj.Image = uploadedImage.secure_url;
+
         const newProduct = await prisma.product.create({
             data: obj
         });
@@ -100,6 +141,15 @@ export async function POST(req) {
 
     } catch (error) {
         console.log(error.message);
+
+        if (uploadedPublicId) {
+            await cloudinary.uploader
+                .destroy(uploadedPublicId)
+                .catch((cleanupError) => {
+                    console.error(`Cloudinary cleanup failed: `, cleanupError);
+                });
+        }
+
         return NextResponse.json({
             success: false,
             message: "Internal Server Error!"
